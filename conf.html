@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .btn-dev { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>Ajustes</h2>
+    <div class="card">
+        <p style="color: #666; font-size: 12px;">Informações do Software</p>
+        <button class="btn-dev" onclick="devClick()">
+            <b>Versão do Nexus</b><br>
+            <span>v1.0.5-build-stable</span>
+        </button>
+    </div>
+
+    <script>
+        let clicks = 0;
+        function devClick() {
+            clicks++;
+            if(clicks < 3) {
+                // Comunica com o Kernel pai para mostrar o Toast
+                window.parent.showToast(`Faltam ${3 - clicks} passos para Dev`);
+            } else if(clicks === 3) {
+                window.parent.config.isDevMode = true;
+                window.parent.document.getElementById('dev-trigger').style.display = 'block';
+                window.parent.showToast("Modo Desenvolvedor Ativado!");
+                location.reload(); // Atualiza a tela local
+            }
+        }
+    </script>
+</body>
+</html>
