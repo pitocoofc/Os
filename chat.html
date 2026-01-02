@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body style="margin: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; background: #eee;">
+    <div style="background: #6200ee; color: white; padding: 15px;">Nexus IA</div>
+    <div id="msgs" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
+    <input id="in" style="padding: 15px; border: none; border-top: 1px solid #ccc;" placeholder="Pergunte algo...">
+
+    <script>
+        const input = document.getElementById('in');
+        const msgs = document.getElementById('msgs');
+
+        input.onkeydown = (e) => {
+            if(e.key === 'Enter') {
+                const val = input.value;
+                msgs.innerHTML += `<div style="margin-bottom:10px; text-align:right;"><b>Você:</b> ${val}</div>`;
+                
+                // Simulação de resposta da IA
+                setTimeout(() => {
+                    msgs.innerHTML += `<div style="margin-bottom:10px; color:#6200ee;"><b>Nexus AI:</b> Analisando solicitação via Kernel... Pronto!</div>`;
+                    msgs.scrollTop = msgs.scrollHeight;
+                }, 500);
+                
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
