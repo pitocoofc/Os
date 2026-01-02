@@ -3,230 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nexus OS - Master Kernel</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;overflow:hidden;background:#000}
-.bg-space{background:radial-gradient(circle at center,#1e40af,#000)}
-
-#home-screen{
-position:absolute;width:100%;height:100%;
-display:grid;grid-template-columns:repeat(4,1fr);
-grid-auto-rows:100px;padding:25px;gap:20px;z-index:1
-}
-.app-icon{display:flex;flex-direction:column;align-items:center;color:#fff;font-size:11px;cursor:pointer}
-.icon-box{
-width:58px;height:58px;border-radius:15px;
-background:rgba(255,255,255,.1);
-display:flex;align-items:center;justify-content:center;
-font-size:30px;backdrop-filter:blur(10px);
-border:1px solid rgba(255,255,255,.2);margin-bottom:5px
-}
-
-#navbar{
-position:absolute;bottom:0;width:100%;height:50px;
-background:rgba(0,0,0,.9);display:flex;
-justify-content:space-around;align-items:center;
-border-top:1px solid #222;z-index:2000
-}
-.nav-btn{color:#fff;font-size:22px;opacity:.7;width:33%;text-align:center;cursor:pointer}
-
-.app-window{
-position:absolute;top:0;left:0;
-width:100%;height:calc(100% - 50px);
-border:none;display:none;z-index:100
-}
-
-#multitask-screen{
-position:absolute;top:0;width:100%;
-height:calc(100% - 50px);
-background:rgba(0,0,0,.85);
-z-index:600;display:none;flex-direction:column;
-align-items:center;padding-top:30px;overflow-y:auto
-}
-.task-card{
-width:180px;height:260px;background:#fff;
-border-radius:12px;margin-bottom:20px;overflow:hidden
-}
-.task-header{
-padding:8px;background:#333;color:#fff;
-display:flex;justify-content:space-between;font-size:11px
-}
-
-#toast{
-position:fixed;bottom:80px;left:50%;
-transform:translateX(-50%);
-background:rgba(0,0,0,.8);color:#fff;
-padding:8px 16px;border-radius:20px;
-font-size:12px;display:none;z-index:9999
-}
-
-#crash-screen{
-position:fixed;top:0;width:100%;height:100%;
-background:#fff;display:none;flex-direction:column;
-align-items:center;justify-content:center;z-index:9999
-}
-
-#dev-trigger{
-position:fixed;right:0;top:40%;
-width:10px;height:60px;
-background:rgba(255,255,255,.3);
-border-radius:10px 0 0 10px;
-z-index:4000;cursor:pointer
-}
-#dev-panel{
-position:fixed;right:-250px;top:0;
-width:220px;height:100%;
-background:rgba(0,0,0,.95);
-backdrop-filter:blur(15px);
-transition:.4s cubic-bezier(.175,.885,.32,1.275);
-padding:20px;color:#fff;z-index:4001
-}
-#dev-panel.active{right:0}
-.dev-opt{
-background:#222;padding:12px;
-border-radius:8px;margin-bottom:10px;
-text-align:center;cursor:pointer
-}
-</style>
+<title>Nexus OS - Kernel</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body class="bg-space">
 
 <div id="toast"></div>
 
+<!-- Loading e Crash -->
+<div id="loading-overlay"><div>Carregando núcleo...</div></div>
 <div id="crash-screen">
-<h1 style="color:red">RAM_OVERFLOW</h1>
-<button onclick="location.reload()" style="margin-top:20px;padding:10px 20px">Reboot System</button>
+    <h1 style="color:red">RAM_OVERFLOW_ERROR</h1>
+    <p style="margin:20px">O sistema excedeu 4.0GB de memória RAM.</p>
+    <button onclick="location.reload()" style="padding:15px; background:black; color:white; border-radius:8px;">Hard Reboot</button>
 </div>
 
+<!-- Dev Panel -->
 <div id="dev-trigger" onclick="toggleDevPanel()"></div>
-
 <div id="dev-panel">
-<h3 style="margin-bottom:20px;color:#6200ee">Nexus Dev Panel</h3>
-<div class="dev-opt" onclick="ramLock()">⚠️ RAM Lock</div>
-<div class="dev-opt" onclick="openApp('term.html','Terminal')">📟 Terminal</div>
-<div class="dev-opt" onclick="openApp('chat.html','Nexus IA')">🤖 Nexus IA</div>
-<div class="dev-opt" onclick="toggleDevPanel()">✖ Fechar</div>
+    <h3 style="margin-bottom:20px; color: #6200ee;">Nexus Dev Panel</h3>
+    <div class="dev-opt" onclick="ramLock()">⚠️ RAM Lock (Crash)</div>
+    <div class="dev-opt" onclick="window.location='term.html'">📟 Terminal</div>
+    <div class="dev-opt" onclick="window.location='chat.html'">🤖 Nexus IA</div>
+    <div class="dev-opt" onclick="toggleDevPanel()">✖ Fechar Painel</div>
 </div>
 
+<!-- Lock Screen -->
+<div id="lock-screen" class="bg-space">
+    <h1 id="clock" style="font-size: 60px;">00:00</h1>
+    <button onclick="this.parentElement.style.display='none'" style="margin-top:20px; padding:10px 30px; border-radius:20px; color:white; background:none; border:1px solid white;">Entrar</button>
+</div>
+
+<!-- Home Screen -->
 <div id="home-screen">
-<div class="app-icon" onclick="openApp('conf.html','Ajustes')"><div class="icon-box">⚙️</div><span>Ajustes</span></div>
-<div class="app-icon" onclick="openApp('files.html','Arquivos')"><div class="icon-box">📁</div><span>Arquivos</span></div>
-<!-- <div class="app-icon" onclick="openApp('notas.html','Notas')"><div class="icon-box">📝</div><span>Notas</span></div> -->
+    <div class="app-icon" onclick="window.location='conf.html'"><div class="icon-box">⚙️</div><span>Ajustes</span></div>
+    <div class="app-icon" onclick="window.location='files.html'"><div class="icon-box">📁</div><span>Arquivos</span></div>
+    <div class="app-icon" onclick="window.location='notas.html'"><div class="icon-box">📝</div><span>Notas</span></div>
 </div>
 
-<div id="app-container"></div>
-
+<!-- Multitarefa -->
 <div id="multitask-screen">
-<button onclick="clearRAM()" style="margin-bottom:20px;padding:8px 20px;border-radius:20px;background:red;color:#fff;border:none">Limpar Tudo</button>
-<div id="task-list"></div>
+    <button onclick="clearRAM()" style="margin-bottom: 20px; padding: 10px 25px; border-radius: 25px; border: none; background: #ff4757; color: white; font-weight: bold;">Limpar Tudo</button>
+    <div id="task-list"></div>
 </div>
 
+<!-- Navbar -->
 <div id="navbar">
-<div class="nav-btn" onclick="goHome()">◁</div>
-<div class="nav-btn" onclick="goHome()">○</div>
-<div class="nav-btn" onclick="toggleMultitask()">☐</div>
+    <div class="nav-btn" onclick="goHome()">◁</div>
+    <div class="nav-btn" onclick="goHome()">○</div>
+    <div class="nav-btn" onclick="toggleMultitask()">☐</div>
 </div>
 
 <script>
-let ram = 0;
+let config = { isDevMode: false, devClicks: 0 };
+let ram = 0.0;
 let openApps = [];
 
-const RAM_LIMIT = 4.0;
+setInterval(() => {
+    const now = new Date();
+    document.getElementById('clock').innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+}, 1000);
 
-function sanitize(id){
-return id.replace(/[^a-zA-Z0-9]/g,'_');
+function showToast(text) {
+    const t = document.getElementById('toast');
+    t.innerText = text; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
 }
 
-function showToast(msg){
-const t=document.getElementById('toast');
-t.innerText=msg;t.style.display='block';
-setTimeout(()=>t.style.display='none',2000);
+function tryActivateDev() {
+    config.devClicks++;
+    if (config.devClicks < 3) {
+        showToast(`Passos para Dev: ${3 - config.devClicks}`);
+    } else if (config.devClicks === 3) {
+        config.isDevMode = true;
+        document.getElementById('dev-trigger').style.display = 'block';
+        showToast("Modo Desenvolvedor Ativado!");
+    }
 }
 
-function openApp(file,name){
-document.getElementById('multitask-screen').style.display='none';
-const winId="win_"+sanitize(file);
-
-if(!openApps.find(a=>a.file===file)){
-ram+=0.5;
-if(ram>=RAM_LIMIT){
-document.getElementById('crash-screen').style.display='flex';
-return;
-}
-openApps.push({file,name,winId});
-const iframe=document.createElement('iframe');
-iframe.id=winId;
-iframe.src=file;
-iframe.className='app-window';
-document.getElementById('app-container').appendChild(iframe);
+function toggleDevPanel() {
+    if(config.isDevMode) document.getElementById('dev-panel').classList.toggle('active');
 }
 
-document.querySelectorAll('.app-window').forEach(w=>w.style.display='none');
-document.getElementById('home-screen').style.display='none';
-document.getElementById(winId).style.display='block';
+function ramLock() {
+    ram = 4.1;
+    document.getElementById('crash-screen').style.display = 'flex';
 }
 
-function toggleMultitask(){
-const m=document.getElementById('multitask-screen');
-const list=document.getElementById('task-list');
-
-if(m.style.display==='flex'){
-m.style.display='none';
-return;
+function toggleMultitask() {
+    const m = document.getElementById('multitask-screen');
+    const list = document.getElementById('task-list');
+    if(m.style.display === 'flex') {
+        m.style.display = 'none';
+    } else {
+        list.innerHTML = '';
+        openApps.forEach(app => {
+            const card = document.createElement('div');
+            card.className = 'task-card';
+            card.innerHTML = `<div class="task-header"><span>${app.toUpperCase()}</span></div>
+                              <div class="task-body" onclick="window.location='${app}.html'">📱</div>`;
+            list.appendChild(card);
+        });
+        m.style.display = 'flex';
+    }
 }
 
-list.innerHTML='';
-openApps.forEach(app=>{
-const card=document.createElement('div');
-card.className='task-card';
-card.innerHTML=`
-<div class="task-header">
-<span>${app.name}</span>
-<span onclick="killProcess('${app.file}',event)">✖</span>
-</div>
-<div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:40px" onclick="openApp('${app.file}','${app.name}')">📱</div>`;
-list.appendChild(card);
-});
-
-document.querySelectorAll('.app-window').forEach(w=>w.style.display='none');
-document.getElementById('home-screen').style.display='none';
-m.style.display='flex';
-}
-
-function killProcess(file,e){
-e.stopPropagation();
-const app=openApps.find(a=>a.file===file);
-if(!app)return;
-document.getElementById(app.winId)?.remove();
-openApps=openApps.filter(a=>a.file!==file);
-ram=Math.max(0,ram-0.5);
-toggleMultitask();
-if(openApps.length===0)goHome();
-}
-
-function clearRAM(){
-openApps.forEach(app=>document.getElementById(app.winId)?.remove());
-openApps=[];ram=0;goHome();
-}
-
-function goHome(){
-document.getElementById('multitask-screen').style.display='none';
-document.querySelectorAll('.app-window').forEach(w=>w.style.display='none');
-document.getElementById('home-screen').style.display='grid';
-}
-
-function toggleDevPanel(){
-document.getElementById('dev-panel').classList.toggle('active');
-}
-
-function ramLock(){
-ram=RAM_LIMIT+1;
-document.getElementById('crash-screen').style.display='flex';
-}
+function clearRAM() { openApps = []; ram = 0; goHome(); }
+function goHome() { document.getElementById('multitask-screen').style.display = 'none'; }
 </script>
-
 </body>
 </html>
