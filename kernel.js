@@ -1,56 +1,48 @@
-// kernel.js
 let openApps = [];
 let ram = 0.0;
+let isDev = false;
 
 function openApp(file, name) {
     document.getElementById('multitask-screen').style.display = 'none';
+    let app = openApps.find(a => a.file === file);
     
-    if (!openApps.find(a => a.file === file)) {
+    if (!app) {
         ram += 0.5;
-        if(ram >= 4.0) { alert("RAM CRITICAL!"); return; }
-        
+        if(ram >= 4.0) { document.getElementById('crash-screen').style.display = 'flex'; return; }
         openApps.push({file, name});
-        const frame = document.createElement('iframe');
-        frame.id = `win-${file}`;
-        frame.src = file;
-        frame.className = 'app-window';
-        document.getElementById('app-container').appendChild(frame);
+        const iframe = document.createElement('iframe');
+        iframe.id = `win-${file}`;
+        iframe.src = file;
+        iframe.className = 'app-window';
+        document.getElementById('app-container').appendChild(iframe);
     }
     
-    showWindow(file);
-}
-
-function showWindow(file) {
     document.querySelectorAll('.app-window').forEach(w => w.style.display = 'none');
-    document.getElementById('home-screen').style.display = 'none';
     document.getElementById(`win-${file}`).style.display = 'block';
-}
-
-function toggleMultitask() {
-    const m = document.getElementById('multitask-screen');
-    const list = document.getElementById('task-list');
-    
-    if(m.style.display === 'flex') {
-        m.style.display = 'none';
-    } else {
-        list.innerHTML = '';
-        document.getElementById('home-screen').style.display = 'none';
-        document.querySelectorAll('.app-window').forEach(w => w.style.display = 'none');
-        
-        openApps.forEach(app => {
-            const card = document.createElement('div');
-            card.className = 'task-card';
-            card.innerHTML = `
-                <div class="task-header"><span>${app.name}</span></div>
-                <div class="task-body" onclick="showWindow('${app.file}')">📱</div>`;
-            list.appendChild(card);
-        });
-        m.style.display = 'flex';
-    }
+    document.getElementById('home-screen').style.display = 'none';
 }
 
 function goHome() {
     document.getElementById('multitask-screen').style.display = 'none';
     document.querySelectorAll('.app-window').forEach(w => w.style.display = 'none');
     document.getElementById('home-screen').style.display = 'grid';
-      }
+}
+
+function toggleMultitask() {
+    const m = document.getElementById('multitask-screen');
+    const list = document.getElementById('task-list');
+    if(m.style.display === 'flex') { m.style.display = 'none'; } 
+    else {
+        list.innerHTML = '';
+        openApps.forEach(app => {
+            let card = document.createElement('div');
+            card.style = "background:white; width:150px; height:200px; margin:10px; border-radius:10px; padding:10px;";
+            card.innerHTML = `<b>${app.name}</b><br><button onclick="openApp('${app.file}', '${app.name}')">Abrir</button>`;
+            list.appendChild(card);
+        });
+        m.style.display = 'flex';
+    }
+}
+
+function toggleDevPanel() { document.getElementById('dev-panel').classList.toggle('active'); }
+function ramLock() { ram = 4.1; document.getElementById('crash-screen').style.display = 'flex'; }
