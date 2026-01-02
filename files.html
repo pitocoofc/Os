@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arquivos - Nexus OS</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body class="bg-space">
-<div style="padding:15px; background:#2196f3; color:white;">Arquivos / ROOT</div>
-<div class="file-row" onclick="window.location='kernel.html'">📂 Kernel</div>
-<div class="file-row" onclick="window.location='os.html'">📂 OS</div>
-<div class="file-row" onclick="window.location='obj.html'">📂 OBJ</div>
-</body>
-</html>
+<div style="padding:15px; background:#2196f3; color:white;">Arquivos / <span id="folder-name">ROOT</span></div>
+<div class="file-row" onclick="currentFolder='kernel'; renderApp('files')">📂 Kernel</div>
+<div class="file-row" onclick="currentFolder='os'; renderApp('files')">📂 OS</div>
+<div class="file-row" onclick="currentFolder='obj'; renderApp('files')">📂 OBJ</div>
