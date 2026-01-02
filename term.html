@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body style="background: black; color: #0f0; font-family: monospace; margin: 0; display: flex; flex-direction: column; height: 100vh;">
+    <div id="out" style="flex: 1; padding: 10px; overflow-y: auto;">Nexus Terminal v1.0<br>Digite 'help' para comandos.</div>
+    <input id="in" style="background: transparent; color: #0f0; border: none; border-top: 1px solid #333; padding: 15px; outline: none;" autofocus>
+
+    <script>
+        const input = document.getElementById('in');
+        const out = document.getElementById('out');
+
+        input.onkeydown = (e) => {
+            if(e.key === 'Enter') {
+                const cmd = input.value;
+                out.innerHTML += `<br><span style="color:white">> ${cmd}</span>`;
+                
+                if(cmd === 'help') out.innerHTML += `<br>Comandos: clear, ram, exit, ver`;
+                else if(cmd === 'ram') out.innerHTML += `<br>RAM Uso: ${window.parent.ram.toFixed(1)}GB`;
+                else if(cmd === 'clear') out.innerHTML = '';
+                else out.innerHTML += `<br>Comando '${cmd}' não reconhecido pelo Kernel.`;
+                
+                input.value = '';
+                out.scrollTop = out.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
