@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus OS - Kernel</title>
+    <link rel="stylesheet" href="system_style.css">
+</head>
+<body class="bg-space">
+    <div id="toast"></div>
+    
+    <div id="dev-trigger" onclick="toggleDevPanel()"></div>
+    <div id="dev-panel">
+        <h3 style="margin-bottom:20px; color: #6200ee;">Nexus Dev Panel</h3>
+        <div class="dev-opt" onclick="ramLock()">⚠️ RAM Lock</div>
+        <div class="dev-opt" onclick="openApp('term.html', 'Terminal')">📟 Terminal</div>
+        <div class="dev-opt" onclick="openApp('chat.html', 'Nexus IA')">🤖 Nexus IA</div>
+        <div class="dev-opt" onclick="toggleDevPanel()">✖ Fechar</div>
+    </div>
+
+    <div id="home-screen">
+        <div class="app-icon" onclick="openApp('config.html', 'Ajustes')"><div class="icon-box">⚙️</div><span>Ajustes</span></div>
+        <div class="app-icon" onclick="openApp('files.html', 'Arquivos')"><div class="icon-box">📁</div><span>Arquivos</span></div>
+        <div class="app-icon" onclick="openApp('notas.html', 'Notas')"><div class="icon-box">📝</div><span>Notas</span></div>
+    </div>
+
+    <div id="app-container"></div>
+
+    <div id="multitask-screen">
+        <button onclick="clearRAM()" class="clear-btn">Limpar Tudo</button>
+        <div id="task-list"></div>
+    </div>
+
+    <div id="navbar">
+        <div class="nav-btn" onclick="goHome()">◁</div>
+        <div class="nav-btn" onclick="goHome()">○</div>
+        <div class="nav-btn" onclick="toggleMultitask()">☐</div>
+    </div>
+
+    <script src="kernel.js"></script>
+</body>
+</html>
